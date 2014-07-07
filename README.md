@@ -1,20 +1,15 @@
-## Introduction
+Exploratory Data Analysis
+========================================================
+Course Project 1 - Readme
+--------------------------------------------------------
 
-This assignment uses data from
-the <a href="http://archive.ics.uci.edu/ml/">UC Irvine Machine
-Learning Repository</a>, a popular repository for machine learning
-datasets. In particular, we will be using the "Individual household
-electric power consumption Data Set" which I have made available on
-the course web site:
+***
+### Submitted by: Hitesh Tulsani
 
+***
+#### The goal of this project is to consume the data from <a href="https://d396qusza40orc.cloudfront.net/exdata%2Fdata%2Fhousehold_power_consumption.zip">Electric power consumption</a> [20Mb], which is taken from <a href="http://archive.ics.uci.edu/ml/">UC Irvine Machine Learning Repository</a>, a popular repository for machine learning datasets and reproduce the plots given in the assigment using base plotting system.
 
-* <b>Dataset</b>: <a href="https://d396qusza40orc.cloudfront.net/exdata%2Fdata%2Fhousehold_power_consumption.zip">Electric power consumption</a> [20Mb]
-
-* <b>Description</b>: Measurements of electric power consumption in
-one household with a one-minute sampling rate over a period of almost
-4 years. Different electrical quantities and some sub-metering values
-are available.
-
+***
 
 The following descriptions of the 9 variables in the dataset are taken
 from
@@ -33,82 +28,303 @@ web site</a>:
 <li><b>Sub_metering_3</b>: energy sub-metering No. 3 (in watt-hour of active energy). It corresponds to an electric water-heater and an air-conditioner.</li>
 </ol>
 
-## Loading the data
+The plots were reproduced in following pairs:
+
+        Script | Produces
+        -------|---------
+        plot1.R| plot1.png
+        plot2.R| plot2.png
+        plot3.R| plot3.png
+        plot4.R| plot4.png
+
+***
+## Scripts' description:
+***
+
+### Common Assumptions:
+<ul>
+<li> The zip file is downloaded in the working directory </li>
+<li> The scripts needs to unzip the .zip file as the first step </li>
+</ul>
+
+### 1. plot1.r:-
 
 
+1. <b>Unzip the downloaded zip file:</b> This script starts by unzipping the "household_power_consumption.zip" presumably present in the working directory:
+
+    ```{r}
+        unzip("household_power_consumption.zip")
+    ```
+
+2. <b>Read All Data:</b> All the data is loaded in a data.frame called powcon:
+
+    ```{r}
+        powcon <- read.table("household_power_consumption.txt",sep=";",header=T,stringsAsFactors=F)
+    ```
+    * Note: All the vectors will be loaded as <b>characters</b>. Their datatypes will be changed in subsequent steps
 
 
+3. <b>Subset the data:</b> The data read in the step above is subset for dates <b>1st Feb 2007</b> and <b>2nd Feb 2007</b> and loaded in a variable called powconsub
 
-When loading the dataset into R, please consider the following:
+    ```{r}
+        powconsub <- subset(powcon,Date %in% c("1/2/2007","2/2/2007"))
+    ```
 
-* The dataset has 2,075,259 rows and 9 columns. First
-calculate a rough estimate of how much memory the dataset will require
-in memory before reading into R. Make sure your computer has enough
-memory (most modern computers should be fine).
+4. <b>Change the datatypes:</b> The data-types of powconsub vectors are changed as follows: 
+    * <b>powconsub$Time:</b> Data and Time vectors were pasted together and the time was striped using <b>strptime()</b> function:
+    
+    ```{r}
+        powconsub$Time <- strptime(paste(powconsub$Date,powconsub$Time),format="%d/%m/%Y %T")
+    ```
+    * <b>powconsub$Date</b>: Date vector was rewritten using <b>as.Date()</b>:
+    
+    ```{r}
+        powconsub$Date <- as.Date(powconsub$Date,format="%d/%m/%Y")
+    ```
+    * Following vectors were converted to <b>numeric types</b> and enclosed inside <b>suppressWarnings()</b> method (where necessary), as "?" in data produce coersion warnings:
+    
+    ```{r}
+        #Global_active_power
+                powconsub$Global_active_power <- as.numeric(powconsub$Global_active_power)
+        
+        #Global_reactive_power
+                powconsub$Global_reactive_power <- as.numeric(powconsub$Global_reactive_power)
+        
+        #Voltage with suppressWarning
+                suppressWarnings(powconsub$Voltage <- as.numeric(powconsub$Voltage))
+        
+        #Global_intensity with suppressWarning
+                suppressWarnings(powconsub$Global_intensity <- as.numeric(powconsub$Global_intensity))
+        
+        #Sub_metering_1 with suppressWarning
+                suppressWarnings(powconsub$Sub_metering_1 <- as.numeric(powconsub$Sub_metering_1))
+        
+        #Sub_metering_2 with suppressWarning
+                suppressWarnings(powconsub$Sub_metering_2 <- as.numeric(powconsub$Sub_metering_2))
+        
+        #Sub_metering_3 with suppressWarning
+                suppressWarnings(powconsub$Sub_metering_3 <- as.numeric(powconsub$Sub_metering_3))
+    ```
+5. <b>plot1.png</b> was reproduced using following code:
+    ```{r}
+        png("plot1.png",width=480,height=480,units="px", bg = "transparent")
+        hist(powconsub$Global_active_power,col="red",main="Global Active Power",xlab="Global Active Power (kilowatts)",ylab="Frequency")
+        dev.off()
+    ```
+6. The <b>reproduced plot</b> is as shown below:
 
-* We will only be using data from the dates 2007-02-01 and
-2007-02-02. One alternative is to read the data from just those dates
-rather than reading in the entire dataset and subsetting to those
-dates.
+   ![plot1.png](plot1.png)
 
-* You may find it useful to convert the Date and Time variables to
-Date/Time classes in R using the `strptime()` and `as.Date()`
-functions.
-
-* Note that in this dataset missing values are coded as `?`.
-
-
-## Making Plots
-
-Our overall goal here is simply to examine how household energy usage
-varies over a 2-day period in February, 2007. Your task is to
-reconstruct the following plots below, all of which were constructed
-using the base plotting system.
-
-First you will need to fork and clone the following GitHub repository:
-[https://github.com/rdpeng/ExData_Plotting1](https://github.com/rdpeng/ExData_Plotting1)
-
-
-For each plot you should
-
-* Construct the plot and save it to a PNG file with a width of 480
-pixels and a height of 480 pixels.
-
-* Name each of the plot files as `plot1.png`, `plot2.png`, etc.
-
-* Create a separate R code file (`plot1.R`, `plot2.R`, etc.) that
-constructs the corresponding plot, i.e. code in `plot1.R` constructs
-the `plot1.png` plot. Your code file **should include code for reading
-the data** so that the plot can be fully reproduced. You should also
-include the code that creates the PNG file.
-
-* Add the PNG file and R code file to your git repository
-
-When you are finished with the assignment, push your git repository to
-GitHub so that the GitHub version of your repository is up to
-date. There should be four PNG files and four R code files.
-
-
-The four plots that you will need to construct are shown below. 
-
-
-### Plot 1
+### 2. plot2.r:-
 
 
-![plot of chunk unnamed-chunk-2](figure/unnamed-chunk-2.png) 
+1. <b>Unzip the downloaded zip file:</b> This script starts by unzipping the "household_power_consumption.zip" presumably present in the working directory:
+
+    ```{r}
+        unzip("household_power_consumption.zip")
+    ```
+
+2. <b>Read All Data:</b> All the data is loaded in a data.frame called powcon:
+
+    ```{r}
+        powcon <- read.table("household_power_consumption.txt",sep=";",header=T,stringsAsFactors=F)
+    ```
+    * Note: All the vectors will be loaded as <b>characters</b>. Their datatypes will be changed in subsequent steps
 
 
-### Plot 2
+3. <b>Subset the data:</b> The data read in the step above is subset for dates <b>1st Feb 2007</b> and <b>2nd Feb 2007</b> and loaded in a variable called powconsub
 
-![plot of chunk unnamed-chunk-3](figure/unnamed-chunk-3.png) 
+    ```{r}
+        powconsub <- subset(powcon,Date %in% c("1/2/2007","2/2/2007"))
+    ```
+
+4. <b>Change the datatypes:</b> The data-types of powconsub vectors are changed as follows: 
+    * <b>powconsub$Time:</b> Data and Time vectors were pasted together and the time was striped using <b>strptime()</b> function:
+    
+    ```{r}
+        powconsub$Time <- strptime(paste(powconsub$Date,powconsub$Time),format="%d/%m/%Y %T")
+    ```
+    * <b>powconsub$Date</b>: Date vector was rewritten using <b>as.Date()</b>:
+    
+    ```{r}
+        powconsub$Date <- as.Date(powconsub$Date,format="%d/%m/%Y")
+    ```
+    * Following vectors were converted to <b>numeric types</b> and enclosed inside <b>suppressWarnings()</b> method (where necessary), as "?" in data produce coersion warnings:
+    
+    ```{r}
+        #Global_active_power
+                powconsub$Global_active_power <- as.numeric(powconsub$Global_active_power)
+        
+        #Global_reactive_power
+                powconsub$Global_reactive_power <- as.numeric(powconsub$Global_reactive_power)
+        
+        #Voltage with suppressWarning
+                suppressWarnings(powconsub$Voltage <- as.numeric(powconsub$Voltage))
+        
+        #Global_intensity with suppressWarning
+                suppressWarnings(powconsub$Global_intensity <- as.numeric(powconsub$Global_intensity))
+        
+        #Sub_metering_1 with suppressWarning
+                suppressWarnings(powconsub$Sub_metering_1 <- as.numeric(powconsub$Sub_metering_1))
+        
+        #Sub_metering_2 with suppressWarning
+                suppressWarnings(powconsub$Sub_metering_2 <- as.numeric(powconsub$Sub_metering_2))
+        
+        #Sub_metering_3 with suppressWarning
+                suppressWarnings(powconsub$Sub_metering_3 <- as.numeric(powconsub$Sub_metering_3))
+    ```
+5. <b>plot2.png</b> was reproduced using following code:
+    ```{r}
+        png("plot2.png",width=480,height=480,units="px", bg = "transparent")
+        plot(powconsub$Time,powconsub$Global_active_power,type="l",xlab="",ylab="Global Active Power (kilowatts)")
+        dev.off()
+    ```
+6. The <b>reproduced plot</b> is as shown below:
+
+   ![plot2.png](plot2.png)
+
+### 3. plot3.r:-
 
 
-### Plot 3
+1. <b>Unzip the downloaded zip file:</b> This script starts by unzipping the "household_power_consumption.zip" presumably present in the working directory:
 
-![plot of chunk unnamed-chunk-4](figure/unnamed-chunk-4.png) 
+    ```{r}
+        unzip("household_power_consumption.zip")
+    ```
+
+2. <b>Read All Data:</b> All the data is loaded in a data.frame called powcon:
+
+    ```{r}
+        powcon <- read.table("household_power_consumption.txt",sep=";",header=T,stringsAsFactors=F)
+    ```
+    * Note: All the vectors will be loaded as <b>characters</b>. Their datatypes will be changed in subsequent steps
 
 
-### Plot 4
+3. <b>Subset the data:</b> The data read in the step above is subset for dates <b>1st Feb 2007</b> and <b>2nd Feb 2007</b> and loaded in a variable called powconsub
 
-![plot of chunk unnamed-chunk-5](figure/unnamed-chunk-5.png) 
+    ```{r}
+        powconsub <- subset(powcon,Date %in% c("1/2/2007","2/2/2007"))
+    ```
 
+4. <b>Change the datatypes:</b> The data-types of powconsub vectors are changed as follows: 
+    * <b>powconsub$Time:</b> Data and Time vectors were pasted together and the time was striped using <b>strptime()</b> function:
+    
+    ```{r}
+        powconsub$Time <- strptime(paste(powconsub$Date,powconsub$Time),format="%d/%m/%Y %T")
+    ```
+    * <b>powconsub$Date</b>: Date vector was rewritten using <b>as.Date()</b>:
+    
+    ```{r}
+        powconsub$Date <- as.Date(powconsub$Date,format="%d/%m/%Y")
+    ```
+    * Following vectors were converted to <b>numeric types</b> and enclosed inside <b>suppressWarnings()</b> method (where necessary), as "?" in data produce coersion warnings:
+    
+    ```{r}
+        #Global_active_power
+                powconsub$Global_active_power <- as.numeric(powconsub$Global_active_power)
+        
+        #Global_reactive_power
+                powconsub$Global_reactive_power <- as.numeric(powconsub$Global_reactive_power)
+        
+        #Voltage with suppressWarning
+                suppressWarnings(powconsub$Voltage <- as.numeric(powconsub$Voltage))
+        
+        #Global_intensity with suppressWarning
+                suppressWarnings(powconsub$Global_intensity <- as.numeric(powconsub$Global_intensity))
+        
+        #Sub_metering_1 with suppressWarning
+                suppressWarnings(powconsub$Sub_metering_1 <- as.numeric(powconsub$Sub_metering_1))
+        
+        #Sub_metering_2 with suppressWarning
+                suppressWarnings(powconsub$Sub_metering_2 <- as.numeric(powconsub$Sub_metering_2))
+        
+        #Sub_metering_3 with suppressWarning
+                suppressWarnings(powconsub$Sub_metering_3 <- as.numeric(powconsub$Sub_metering_3))
+    ```
+5. <b>plot3.png</b> was reproduced using following code:
+    ```{r}
+        png(file='plot3.png',width = 480, height = 480, units = "px", bg = "transparent")
+        plot(powconsub$Time,powconsub$Sub_metering_1,type="l",xlab="",ylab="Energy sub metering")
+        lines(powconsub$Time,powconsub$Sub_metering_2,col='red')
+        lines(powconsub$Time,powconsub$Sub_metering_3,col='blue')
+        legend("topright",legend=c("Sub_metering_1","Sub_metering_2","Sub_metering_3"),lty=1,col=c("black","red","blue"))
+        dev.off()
+    ```
+6. The <b>reproduced plot</b> is as shown below:
+
+   ![plot3.png](plot3.png)
+
+### 4. plot4.r:-
+
+
+1. <b>Unzip the downloaded zip file:</b> This script starts by unzipping the "household_power_consumption.zip" presumably present in the working directory:
+
+    ```{r}
+        unzip("household_power_consumption.zip")
+    ```
+
+2. <b>Read All Data:</b> All the data is loaded in a data.frame called powcon:
+
+    ```{r}
+        powcon <- read.table("household_power_consumption.txt",sep=";",header=T,stringsAsFactors=F)
+    ```
+    * Note: All the vectors will be loaded as <b>characters</b>. Their datatypes will be changed in subsequent steps
+
+
+3. <b>Subset the data:</b> The data read in the step above is subset for dates <b>1st Feb 2007</b> and <b>2nd Feb 2007</b> and loaded in a variable called powconsub
+
+    ```{r}
+        powconsub <- subset(powcon,Date %in% c("1/2/2007","2/2/2007"))
+    ```
+
+4. <b>Change the datatypes:</b> The data-types of powconsub vectors are changed as follows: 
+    * <b>powconsub$Time:</b> Data and Time vectors were pasted together and the time was striped using <b>strptime()</b> function:
+    
+    ```{r}
+        powconsub$Time <- strptime(paste(powconsub$Date,powconsub$Time),format="%d/%m/%Y %T")
+    ```
+    * <b>powconsub$Date</b>: Date vector was rewritten using <b>as.Date()</b>:
+    
+    ```{r}
+        powconsub$Date <- as.Date(powconsub$Date,format="%d/%m/%Y")
+    ```
+    * Following vectors were converted to <b>numeric types</b> and enclosed inside <b>suppressWarnings()</b> method (where necessary), as "?" in data produce coersion warnings:
+    
+    ```{r}
+        #Global_active_power
+                powconsub$Global_active_power <- as.numeric(powconsub$Global_active_power)
+        
+        #Global_reactive_power
+                powconsub$Global_reactive_power <- as.numeric(powconsub$Global_reactive_power)
+        
+        #Voltage with suppressWarning
+                suppressWarnings(powconsub$Voltage <- as.numeric(powconsub$Voltage))
+        
+        #Global_intensity with suppressWarning
+                suppressWarnings(powconsub$Global_intensity <- as.numeric(powconsub$Global_intensity))
+        
+        #Sub_metering_1 with suppressWarning
+                suppressWarnings(powconsub$Sub_metering_1 <- as.numeric(powconsub$Sub_metering_1))
+        
+        #Sub_metering_2 with suppressWarning
+                suppressWarnings(powconsub$Sub_metering_2 <- as.numeric(powconsub$Sub_metering_2))
+        
+        #Sub_metering_3 with suppressWarning
+                suppressWarnings(powconsub$Sub_metering_3 <- as.numeric(powconsub$Sub_metering_3))
+    ```
+5. <b>plot4.png</b> was reproduced using following code:
+    ```{r}
+        png(file='plot4.png',width = 480, height = 480, units = "px", bg = "transparent")
+        par(mfrow=c(2,2))
+        plot(powconsub$Time,powconsub$Global_active_power,ylab="Global Active Power",xlab="",type="l")
+        plot(powconsub$Time,powconsub$Voltage,ylab="Voltage",xlab="datetime",type="l")
+        plot(powconsub$Time,powconsub$Sub_metering_1,type="l",xlab="",ylab="Energy sub metering")
+        lines(powconsub$Time,powconsub$Sub_metering_2,col='red')
+        lines(powconsub$Time,powconsub$Sub_metering_3,col='blue')
+        legend("topright",bty="n",legend=c("Sub_metering_1","Sub_metering_2","Sub_metering_3"),lty=1,col=c("black","red","blue"))
+        plot(powconsub$Time,powconsub$Global_reactive_power,ylab="Global_reactive_power",xlab="datetime",type="l")
+        dev.off()
+    ```
+6. The <b>reproduced plot</b> is as shown below:
+
+   ![plot4.png](plot4.png)
