@@ -106,6 +106,7 @@ The plots were reproduced in following pairs:
                 suppressWarnings(powconsub$Sub_metering_3 <- as.numeric(powconsub$Sub_metering_3))
     ```
 5. <b>plot1.png</b> was reproduced using following code:
+    
     ```{r}
         png("plot1.png",width=480,height=480,units="px", bg = "transparent")
         hist(powconsub$Global_active_power,col="red",main="Global Active Power",xlab="Global Active Power (kilowatts)",ylab="Frequency")
@@ -174,6 +175,7 @@ The plots were reproduced in following pairs:
                 suppressWarnings(powconsub$Sub_metering_3 <- as.numeric(powconsub$Sub_metering_3))
     ```
 5. <b>plot2.png</b> was reproduced using following code:
+    
     ```{r}
         png("plot2.png",width=480,height=480,units="px", bg = "transparent")
         plot(powconsub$Time,powconsub$Global_active_power,type="l",xlab="",ylab="Global Active Power (kilowatts)")
@@ -242,6 +244,7 @@ The plots were reproduced in following pairs:
                 suppressWarnings(powconsub$Sub_metering_3 <- as.numeric(powconsub$Sub_metering_3))
     ```
 5. <b>plot3.png</b> was reproduced using following code:
+    
     ```{r}
         png(file='plot3.png',width = 480, height = 480, units = "px", bg = "transparent")
         plot(powconsub$Time,powconsub$Sub_metering_1,type="l",xlab="",ylab="Energy sub metering")
@@ -313,6 +316,7 @@ The plots were reproduced in following pairs:
                 suppressWarnings(powconsub$Sub_metering_3 <- as.numeric(powconsub$Sub_metering_3))
     ```
 5. <b>plot4.png</b> was reproduced using following code:
+    
     ```{r}
         png(file='plot4.png',width = 480, height = 480, units = "px", bg = "transparent")
         par(mfrow=c(2,2))
